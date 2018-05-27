@@ -1,0 +1,36 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package views;
+
+import dao.JpaUtil;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import models.Client;
+import models.ProfilAstro;
+import services.Services;
+
+/**
+ *
+ * @author eborghino
+ */
+public class Main {
+    public static void main(String args[]) throws ParseException{
+        JpaUtil.init();
+        Services services = new Services();
+        /*SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date d = sdf.parse("12/11/1995");
+        ProfilAstro pa = new ProfilAstro("scorpion", "blabla", "bleu", "rat");
+        Client c = new Client("femme", "Bernardette", "Roberta", d, "1 route balabala", "bernardettebalabla@coucou.com", "0211554789", pa );
+        services.inscription(c);*/
+        System.out.println(services.connexion("bernardettebalabla@coucou.com")); //true si existe
+        System.out.println("-----------------------");
+        System.out.println(services.connexion("ghfgh@coucou.com")); // false si existe pas
+        services.consulterProfilAstro("bernardettebalabla@coucou.com");
+        
+        JpaUtil.destroy();
+    }
+}

@@ -1,0 +1,87 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package views;
+
+import dao.JpaUtil;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import models.Astrologue;
+import models.Client;
+import models.Employe;
+import models.Medium;
+import models.ProfilAstro;
+import models.Tarologue;
+import models.Voyant;
+import services.Services;
+
+/**
+ *
+ * @author eborghino
+ */
+public class Main {
+    public static void createEmployes(Services service){
+        Employe e1 = new Employe("Employe1", "Employe1", 0, "employe1@positif.com", "dispo");
+        Employe e2 = new Employe("Employe2", "Employe2", 0, "employe2@positif.com", "dispo");
+        Employe e3 = new Employe("Employe3", "Employe3", 0, "employe3@positif.com", "dispo");
+        Employe e4 = new Employe("Employe4", "Employe4", 0, "employe4@positif.com", "dispo");
+        Employe e5 = new Employe("Employe5", "Employe5", 0, "employe5@positif.com", "dispo");
+        Employe e6 = new Employe("Employe6", "Employe6", 0, "employe6@positif.com", "dispo");
+        service.createEmploye(e1);
+        service.createEmploye(e2);
+        service.createEmploye(e3);
+        service.createEmploye(e4);
+        service.createEmploye(e5);
+        service.createEmploye(e6);
+    }
+    
+    public static void createMediums(Services service){
+        Medium Gwenael = new Voyant("Boule de cristal", "Gwenael", "Spécialiste des grandes conversation au dela de toutes les frontieres.", 0);
+        Medium Irma = new Tarologue("Taro de marseille", "Mme Irma", "Comprenez votre entourage grace à mes cartes ! Resultats rapides.", 0);
+        Medium Sara = new Astrologue("ENS Astro", 2006, "Mme Sara", "Mme Sara vous revelera votre avenir pour éclairer votre passé.", 0);
+        service.createMedium(Gwenael);
+        service.createMedium(Sara);
+        service.createMedium(Irma);
+    }
+    
+    public static void setRoles(Services service){
+        List<Medium> listMediums = service.consulterListeMediums();
+        List<Employe> listEmployes = service.consulterListeEmployes();
+        for(Medium m : listMediums){
+            for(Employe e : listEmployes){
+                m.addEmploye(e);
+            }
+            service.updateMedium(m);
+        }
+        
+    }
+    
+    public static void main(String args[]) throws ParseException{
+        JpaUtil.init();
+        Services services = new Services();
+        //createEmployes(services);
+        createMediums(services);
+        setRoles(services);
+        List<Medium> listMediums = services.consulterListeMediums();
+        for(Medium m : listMediums)
+            System.out.println(m);
+        System.out.println(services.consulterMedium(251)); //true si existe
+        System.out.println("-----------------------");
+        System.out.println(services.consulterMedium(252)); // false si existe pas
+        /*SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date d = sdf.parse("12/11/1995");
+        ProfilAstro pa = new ProfilAstro("scorpion", "blabla", "bleu", "rat");
+        Client c = new Client("femme", "Bernardette", "Roberta", d, "1 route balabala", "bernardettebalabla@coucou.com", "0211554789", pa );
+        services.inscription(c);*/
+        System.out.println(services.connexionClient("bernardettebalabla@coucou.com")); //true si existe
+        System.out.println("-----------------------");
+        System.out.println(services.connexionClient("ghfgh@coucou.com")); // false si existe pas
+        services.consulterProfilAstro("bernardettebalabla@coucou.com");
+        
+        JpaUtil.destroy();
+    }
+}

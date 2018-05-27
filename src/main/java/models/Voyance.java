@@ -1,0 +1,119 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package models;
+
+import java.io.Serializable;
+import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+/**
+ *
+ * @author eborghino
+ */
+@Entity
+public class Voyance implements Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private int idV;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date startDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date endDate;
+    private String commentary;
+
+    @OneToOne
+    @JoinColumn(nullable=false)
+    private Client client;
+    @OneToOne
+    private Employe employe;
+    @OneToOne
+    @JoinColumn(nullable=false)
+    private Medium medium;
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public Employe getEmploye() {
+        return employe;
+    }
+
+    public void setEmploye(Employe employe) {
+        this.employe = employe;
+    }
+
+    public Medium getMedium() {
+        return medium;
+    }
+
+    public void setMedium(Medium medium) {
+        this.medium = medium;
+    }
+    
+    
+    public int getIdV() {
+        return idV;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public String getCommentary() {
+        return commentary;
+    }
+
+    public void setCommentary(String commentary) {
+        this.commentary = commentary;
+    }
+
+    public Voyance(Client client, Medium medium, Employe employe) {
+        this.startDate = null;
+        this.endDate = null;
+        this.commentary = null;
+        this.client = client;
+        this.employe = employe;
+        this.medium = medium;
+    }
+    
+
+    public Voyance() {
+    }
+
+    @Override
+    public String toString() {
+        return "Voyance{" + "idV=" + idV + ", startDate=" + startDate + ", endDate=" + endDate + ", commentary=" + commentary + ", client=" + client + ", employe=" + employe + ", medium=" + medium + '}'+ '\n';
+    }
+
+    
+    
+}

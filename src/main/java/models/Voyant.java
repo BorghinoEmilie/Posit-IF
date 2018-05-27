@@ -1,0 +1,44 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package models;
+
+import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+/**
+ *
+ * @author eborghino
+ */
+@Entity
+public class Voyant extends Medium {
+
+   private String Support;
+
+    public String getSupport() {
+        return Support;
+    }
+
+    public void setSupport(String Support) {
+        this.Support = Support;
+    }
+
+    public Voyant(String Support, String Nom, String bio, int nbVoyances) {
+        super(Nom, bio, nbVoyances);
+        this.Support = Support;
+    }
+
+    public Voyant() {
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + "Voyant{" + "Support=" + Support + '}'+ '\n';
+    }
+   
+}

@@ -1,0 +1,206 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package services;
+
+import dao.JpaUtil;
+import dao.DaoClient;
+import dao.DaoEmploye;
+import dao.DaoMedium;
+import dao.DaoProfilAstro;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityManager;
+import javax.persistence.TransactionRequiredException;
+import models.Client;
+import models.Employe;
+import models.Medium;
+import models.ProfilAstro;
+
+/**
+ *
+ * @author eborghino
+ */
+public class Services {
+    public boolean connexionClient(String mail){
+        JpaUtil.creerEntityManager();
+        
+        try{
+            DaoClient daoclient = new DaoClient();
+            daoclient.findByEmail(mail);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+    
+    public boolean inscription(Client client){
+        JpaUtil.creerEntityManager();
+        JpaUtil.ouvrirTransaction();
+        try{
+            DaoClient daoclient = new DaoClient();
+            daoclient.createClient(client);
+        }catch(Exception e){
+            JpaUtil.annulerTransaction();
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        JpaUtil.validerTransaction();
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+    
+    public boolean connexionEmploye(String mail){
+        JpaUtil.creerEntityManager();
+        
+        try{
+            DaoEmploye daoemploye = new DaoEmploye();
+            daoemploye.findByEmail(mail);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+    
+    public boolean createEmploye(Employe employe){
+        JpaUtil.creerEntityManager();
+        JpaUtil.ouvrirTransaction();
+        try{
+            DaoEmploye daoemploye = new DaoEmploye();
+            daoemploye.createEmploye(employe);
+        }catch(Exception e){
+            System.out.println("EXCEPTION");
+            JpaUtil.annulerTransaction();
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        JpaUtil.validerTransaction();
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+    /*public List<Voyance> consulterHistorique(Long idC){
+        
+    }*/
+    
+    public List<Medium> consulterListeMediums(){
+        JpaUtil.creerEntityManager();
+        List<Medium> listMediums;
+        try{
+            DaoMedium daomedium = new DaoMedium();
+            listMediums = daomedium.findAll();
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return listMediums;
+        
+    }
+    
+    public List<Employe> consulterListeEmployes(){
+        JpaUtil.creerEntityManager();
+        List<Employe> listEmployes;
+        try{
+            DaoEmploye daoemploye = new DaoEmploye();
+            listEmployes = daoemploye.findAll();
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return listEmployes;
+        
+    }
+    
+    public Medium consulterMedium(int idM){
+        JpaUtil.creerEntityManager();
+        Medium medium;
+        try{
+            DaoMedium daomedium = new DaoMedium();
+            medium = daomedium.findById(idM);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return medium;
+    }
+    
+    public boolean updateMedium(Medium medium){
+        JpaUtil.creerEntityManager();
+        JpaUtil.ouvrirTransaction();
+        try{
+            DaoMedium daomedium = new DaoMedium();
+            daomedium.updateMedium(medium);
+        }catch(Exception e){
+            JpaUtil.annulerTransaction();
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        JpaUtil.validerTransaction();
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+    
+    /*public boolean demanderVoyance(Long idC, Long idM){
+        
+    }
+    
+    public void consulterDemandeVoyance(Long idE){
+        
+    }
+    
+    public void genererCamembert(){ //TODO attention nreturn
+        
+    }
+    
+    public void commencerVoyance(Long idV){
+        
+    }
+    
+    public void terminerVoyance(Long idV){
+        
+    }*/
+    
+    public ProfilAstro consulterProfilAstro(String mail){
+        JpaUtil.creerEntityManager();
+        ProfilAstro profilAstro;
+        try{
+            DaoClient daoclient = new DaoClient();
+            Client client = daoclient.findByEmail(mail);
+            profilAstro = client.getProfilAstro();
+            System.out.println(profilAstro);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return profilAstro;
+    }
+
+    public boolean createMedium(Medium medium) {
+        JpaUtil.creerEntityManager();
+        JpaUtil.ouvrirTransaction();
+        try{
+            DaoMedium daomedium = new DaoMedium();
+            daomedium.createMedium(medium);
+        }catch(Exception e){
+            System.out.println("EXCEPTION");
+            JpaUtil.annulerTransaction();
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        JpaUtil.validerTransaction();
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+}

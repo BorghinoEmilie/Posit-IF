@@ -1,0 +1,105 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package services;
+
+import dao.JpaUtil;
+import dao.DaoClient;
+import dao.DaoProfilAstro;
+import java.util.Date;
+import java.util.List;
+import javax.persistence.EntityManager;
+import models.Client;
+import models.ProfilAstro;
+
+/**
+ *
+ * @author eborghino
+ */
+public class Services {
+    public boolean connexion(String mail){
+        JpaUtil.creerEntityManager();
+        
+        try{
+            DaoClient daoclient = new DaoClient();
+            daoclient.findByEmail(mail);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+    
+    public boolean inscription(Client client){
+        JpaUtil.creerEntityManager();
+        JpaUtil.ouvrirTransaction();
+        try{
+            DaoClient daoclient = new DaoClient();
+            daoclient.createClient(client);
+        }catch(Exception e){
+            JpaUtil.annulerTransaction();
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        JpaUtil.validerTransaction();
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+    
+    /*public List<Voyance> consulterHistorique(Long idC){
+        
+    }
+    
+    public List<Medium> consulterListeMediums(){
+        
+        
+    }
+    
+    public Medium consulterMedium(Long idM){
+        
+    }
+    
+    public ProfilAstro consulterProfilAstro(Long idC){
+        
+    }
+    
+    public boolean demanderVoyance(Long idC, Long idM){
+        
+    }
+    
+    public void consulterDemandeVoyance(Long idE){
+        
+    }
+    
+    public void genererCamembert(){ //TODO attention nreturn
+        
+    }
+    
+    public void commencerVoyance(Long idV){
+        
+    }
+    
+    public void terminerVoyance(Long idV){
+        
+    }*/
+    
+    public ProfilAstro consulterProfilAstro(String mail){
+        JpaUtil.creerEntityManager();
+        ProfilAstro profilAstro;
+        try{
+            DaoClient daoclient = new DaoClient();
+            Client client = daoclient.findByEmail(mail);
+            profilAstro = client.getProfilAstro();
+            System.out.println(profilAstro);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return profilAstro;
+    }
+}

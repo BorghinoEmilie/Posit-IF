@@ -1,0 +1,93 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package views;
+
+import dao.JpaUtil;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import javafx.util.Pair;
+import models.Astrologue;
+import models.Client;
+import models.Employe;
+import models.Medium;
+import models.ProfilAstro;
+import models.Tarologue;
+import models.Voyance;
+import models.Voyant;
+import services.Services;
+
+/**
+ *
+ * @author eborghino
+ */
+public class Main {
+    
+    public static void main(String args[]) throws ParseException, IOException{
+        JpaUtil.init();
+        Services services = new Services();
+        //services.initiatePositif();
+        
+        // Inscription
+ /*       SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        Date d = sdf.parse("12/11/1995");
+        Client c = new Client("femme", "Bernardette", "Roberta", d, "1 route balabala", "bernardettebalabla@coucou.com", "0211554789" );
+        services.inscription(c);
+      */  Client c1 = services.recupererClientById(13);
+        System.out.println(c1);
+        
+        
+        
+        //Connexion
+        System.out.println("Le client avec le mail bernardettebalabla@coucou.com existe t il ?  : " + services.connexionClient("bernardettebalabla@coucou.com")); //true si existe
+        System.out.println("Le client avec le mail richardo@coucou.com existe t il ?  : " + services.connexionClient("richardo@coucou.com")); //false
+        
+        System.out.println("L'employe avec le mail employe1@positif.com existe t il ?  : " + services.connexionEmploye("employe1@positif.com")); //true si existe
+        System.out.println("L'employe avec le mail tesst@positif.com existe t il ?  : " + services.connexionEmploye("tesst@positif.com")); //false
+        
+        //Prof Astro
+        System.out.println(services.consulterProfilAstro(c.getIdC())); //true si existe
+        
+        //Mediums
+        //System.out.println(services.consulterListeMediums());
+        Medium m = services.recupererMediumById(7);
+        System.out.println(m);
+        
+        //Employes
+        System.out.println(services.recupererEmployesDispo());
+        Employe e = services.recupererEmployeById(13);
+        System.out.println(e);
+        e.setStatus("indispo");
+        services.updateEmploye(e);
+        System.out.println(services.recupererEmployesDispo());
+        
+        
+        //VOYANCE
+        System.out.println(m);
+        services.demanderVoyance(c1, m);
+        Voyance voyance = services.consulterVoyance(51);
+        //System.out.println(voyance);
+        //services.commencerVoyance(voyance);
+        services.terminerVoyance(voyance, "Good");
+        
+        for (Voyance v : services.consulterHistorique(c1))
+            System.out.println(v);
+        
+        for (Pair<Medium,Integer> v : services.recupererVoyancesParMedium())
+            System.out.println(v);
+        
+        for (Pair<Employe,Integer> v : services.recupererVoyancesParEmploye())
+            System.out.println(v);
+        
+        for (Pair<Employe,Integer> v : services.recupererVoyancesParEmployePourcentage())
+            System.out.println(v);
+        
+        JpaUtil.destroy();
+        
+    }
+}

@@ -1,0 +1,456 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package services;
+
+import dao.JpaUtil;
+import dao.DaoClient;
+import dao.DaoEmploye;
+import dao.DaoMedium;
+import dao.DaoProfilAstro;
+import dao.DaoVoyance;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import javafx.util.Pair;
+import models.Astrologue;
+import models.Client;
+import models.Employe;
+import models.Medium;
+import models.ProfilAstro;
+import models.Tarologue;
+import models.Voyance;
+import models.Voyant;
+import util.AstroApi;
+
+/**
+ *
+ * @author eborghino
+ */
+public class Services {
+    
+    // INIT
+    
+    public boolean initiatePositif(){
+        Employe e1 = new Employe("Employe1", "Employe1", 0, "employe1@positif.com", "dispo");
+        Employe e2 = new Employe("Employe2", "Employe2", 0, "employe2@positif.com", "dispo");
+        Employe e3 = new Employe("Employe3", "Employe3", 0, "employe3@positif.com", "dispo");
+        Employe e4 = new Employe("Employe4", "Employe4", 0, "employe4@positif.com", "dispo");
+        Employe e5 = new Employe("Employe5", "Employe5", 0, "employe5@positif.com", "dispo");
+        Employe e6 = new Employe("Employe6", "Employe6", 0, "employe6@positif.com", "dispo");
+        JpaUtil.creerEntityManager();
+        JpaUtil.ouvrirTransaction();
+        try{
+            DaoEmploye daoemploye = new DaoEmploye();
+            daoemploye.createEmploye(e1);
+            daoemploye.createEmploye(e2);
+            daoemploye.createEmploye(e3);
+            daoemploye.createEmploye(e4);
+            daoemploye.createEmploye(e5);
+            daoemploye.createEmploye(e6);
+        }catch(Exception e){
+            JpaUtil.annulerTransaction();
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        JpaUtil.validerTransaction();
+        JpaUtil.ouvrirTransaction();
+        
+        Medium Gwenael = new Voyant("Boule de cristal", "Gwenael", "Spécialiste des grandes conversation au dela de toutes les frontieres.", 0);
+        Medium Dalmarre = new Voyant("Marc de café", "J. Dalmarre", "Votre avenir est devant vous : r'egardons le ensemble !", 0);
+        Medium Irma = new Tarologue("Taro de marseille", "Mme Irma", "Comprenez votre entourage grace à mes cartes ! Resultats rapides.", 0);
+        Medium Lisa = new Tarologue("Taro de Brocéliande", "Mme Lsa Maria NGUYINIA", "Mes cartes spécialisées pour la région de Bretagne répondront à toutes vos questions personnelles.", 0);
+        Medium Sara = new Astrologue("ENS Astro", 2006, "Mme Sara", "Mme Sara vous revelera votre avenir pour éclairer votre passé.", 0);
+        Medium Mounia = new Astrologue("Institut des Nouveaux Savoirs Astrologiques", 2010, "Mme Mounia Mounia", "Aveni, avenir, que nous réserves-tu ? N'attendez plus, demandez à me consulter !", 0);
+        List<Employe> listEmployes;
+        try{
+            DaoEmploye daoemploye = new DaoEmploye();
+            listEmployes = daoemploye.findAll();
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        Gwenael.addEmploye(listEmployes.get(0));
+        Gwenael.addEmploye(listEmployes.get(1));
+        Irma.addEmploye(listEmployes.get(2));
+        Irma.addEmploye(listEmployes.get(3));
+        Sara.addEmploye(listEmployes.get(4));
+        Sara.addEmploye(listEmployes.get(5));
+        Dalmarre.addEmploye(listEmployes.get(0));
+        Dalmarre.addEmploye(listEmployes.get(1));
+        Lisa.addEmploye(listEmployes.get(2));
+        Lisa.addEmploye(listEmployes.get(3));
+        Mounia.addEmploye(listEmployes.get(4));
+        Mounia.addEmploye(listEmployes.get(5));
+        
+        try{
+            DaoMedium daomedium = new DaoMedium();
+            daomedium.updateMedium(Gwenael);
+            daomedium.updateMedium(Irma);
+            daomedium.updateMedium(Sara);
+            daomedium.updateMedium(Dalmarre);
+            daomedium.updateMedium(Lisa);
+            daomedium.updateMedium(Mounia);
+        }catch(Exception e){
+            JpaUtil.annulerTransaction();
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        JpaUtil.validerTransaction();
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+    
+    
+    
+    // CLIENT
+    
+    public boolean inscription(Client client) throws IOException{
+        JpaUtil.creerEntityManager();
+        JpaUtil.ouvrirTransaction();
+        AstroApi astroapi = new AstroApi("ASTRO-02-M0lGLURBU0ktQVNUUk8tQjAy");
+        List<String> profil = astroapi.getProfil(client.getPrenom(), client.getDateNaissance());
+        ProfilAstro pa = new ProfilAstro(profil.get(0), profil.get(1), profil.get(2), profil.get(3));
+        client.setProfilAstro(pa);
+        try{
+            DaoClient daoclient = new DaoClient();
+            daoclient.createClient(client);
+        }catch(Exception e){
+            JpaUtil.annulerTransaction();
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        JpaUtil.validerTransaction();
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+    
+    
+    public Client connexionClient(String mail){
+        JpaUtil.creerEntityManager();
+        Client client;
+        try{
+            DaoClient daoclient = new DaoClient();
+            client = daoclient.findByMail(mail);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        
+        JpaUtil.fermerEntityManager();
+        return client;
+    }
+    
+
+    public Client recupererClientById(int id){
+        JpaUtil.creerEntityManager();
+        Client client;
+        try{
+            DaoClient daoclient = new DaoClient();
+            client = daoclient.findById(id);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return client;        
+    }
+    
+    
+    public List<Voyance> consulterHistorique(Client client){
+        JpaUtil.creerEntityManager();
+        List<Voyance> voyances;
+        try{
+            DaoVoyance daovoyance = new DaoVoyance();
+            voyances = daovoyance.findVoyancesByClient(client);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return voyances;
+    }
+    
+    // EMPLOYE
+    public boolean connexionEmploye(String mail){
+        JpaUtil.creerEntityManager();
+        
+        try{
+            DaoEmploye daoemploye = new DaoEmploye();
+            daoemploye.findByEmail(mail);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+    
+    
+    public List<Employe> recupererEmployesDispo(){
+        JpaUtil.creerEntityManager();
+        List<Employe> listEmployes;
+        try{
+            DaoEmploye daoemploye = new DaoEmploye();
+            listEmployes = daoemploye.findAllDispo();
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return listEmployes;
+        
+    }
+    
+    public Employe recupererEmployeById(int id){
+        JpaUtil.creerEntityManager();
+        Employe employe;
+        try{
+            DaoEmploye daoemploye = new DaoEmploye();
+            employe = daoemploye.findById(id);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return employe;        
+    }
+
+    public boolean updateEmploye(Employe employe){
+        JpaUtil.creerEntityManager();
+        JpaUtil.ouvrirTransaction();
+        try{
+            DaoEmploye daoemploye = new DaoEmploye();
+            daoemploye.updateEmploye(employe);
+        }catch(Exception e){
+            JpaUtil.annulerTransaction();
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        JpaUtil.validerTransaction();
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+    
+   
+    // MEDIUMS
+    public List<Medium> consulterListeMediums(){
+        JpaUtil.creerEntityManager();
+        List<Medium> listMediums;
+        try{
+            DaoMedium daomedium = new DaoMedium();
+            listMediums = daomedium.findAll();
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return listMediums;
+        
+    }
+    
+    public List<Medium> consulterListeMediumsByClient(Client client){
+        JpaUtil.creerEntityManager();
+        List<Medium> listMediums;
+        try{
+            DaoMedium daomedium = new DaoMedium();
+            DaoVoyance daovoyance = new DaoVoyance();
+            listMediums = daovoyance.findMediumByClient(client);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return listMediums;
+    }
+     
+    public Medium recupererMediumById(int id){
+        JpaUtil.creerEntityManager();
+        Medium medium;
+        try{
+            DaoMedium daomedium = new DaoMedium();
+            medium = daomedium.findById(id);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return medium;        
+    }
+    
+    // VOyance
+    public Voyance recupererVoyanceById(int idV){
+        JpaUtil.creerEntityManager();
+        Voyance voyance;
+        try{
+            DaoVoyance daovoyance = new DaoVoyance();
+            voyance = daovoyance.findById(idV);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return voyance;
+    }
+    
+    public boolean demanderVoyance(Client client, Medium medium){
+        JpaUtil.creerEntityManager();
+        
+        Employe e = medium.getEmployeMiniVoyanceDispo();
+        if(e != null)
+            e.setStatus("indispo");
+        JpaUtil.ouvrirTransaction();
+        try{
+            DaoVoyance daovoyance = new DaoVoyance();
+            Voyance voyance = new Voyance(client, medium, e);
+            medium.setNbVoyancesDemandees(medium.getNbVoyancesDemandees()+1);
+            daovoyance.createVoyance(voyance);
+            DaoMedium daomedium = new DaoMedium();
+            daomedium.updateMedium(medium);
+            if(e != null){
+                DaoEmploye daoemploye = new DaoEmploye();
+                daoemploye.updateEmploye(e);
+            }
+        }catch(Exception ex){
+            JpaUtil.annulerTransaction();
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        JpaUtil.validerTransaction();
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+    
+    public Voyance consulterDemandeVoyance(Employe emp){
+        JpaUtil.creerEntityManager();
+        Voyance voyanceDemandee;
+        try{
+            DaoVoyance daovoyance = new DaoVoyance();
+            voyanceDemandee = daovoyance.findNewVoyanceByEmp(emp);
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return voyanceDemandee;
+    }
+    
+    public boolean commencerVoyance(Voyance voyance){
+        if(voyance.getEmploye() == null)
+            return false;
+        JpaUtil.creerEntityManager();
+        JpaUtil.ouvrirTransaction();
+        voyance.setStartDate(new Date());
+        voyance.getEmploye().setNbVoyances(voyance.getEmploye().getNbVoyances()+1);        
+        try{
+            DaoVoyance daovoyance = new DaoVoyance();
+            daovoyance.updateVoyance(voyance);
+            DaoEmploye daoemploye = new DaoEmploye();
+            daoemploye.updateEmploye(voyance.getEmploye());
+        }catch(Exception e){
+            JpaUtil.annulerTransaction();
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        JpaUtil.validerTransaction();
+        JpaUtil.fermerEntityManager();
+        return true; 
+    }
+    
+    public boolean terminerVoyance(Voyance voyance, String commentaire){
+        if(voyance.getEmploye() == null)
+            return false;
+        JpaUtil.creerEntityManager();
+        JpaUtil.ouvrirTransaction();
+        voyance.setCommentary(commentaire);
+        voyance.setEndDate(new Date());
+        Employe e = voyance.getEmploye();
+        e.setStatus("dispo");
+        try{
+            DaoVoyance daovoyance = new DaoVoyance();
+            daovoyance.updateVoyance(voyance);
+            DaoEmploye daoemploye = new DaoEmploye();
+            daoemploye.updateEmploye(e);
+        }catch(Exception ex){
+            JpaUtil.annulerTransaction();
+            JpaUtil.fermerEntityManager();
+            return false;
+        }
+        JpaUtil.validerTransaction();
+        JpaUtil.fermerEntityManager();
+        return true;
+    }
+
+    public List<String> recupererPrediction(Client client, int amour, int sante, int travail) throws IOException{
+        AstroApi astroapi = new AstroApi("ASTRO-02-M0lGLURBU0ktQVNUUk8tQjAy");
+        List<String> predictions = astroapi.getPredictions(client.getProfilAstro().getCouleurPB(), client.getProfilAstro().getAnimalTotem(), amour, sante, travail);
+       return predictions;
+    }
+    
+    public List<Pair<Medium,Integer>> recupererVoyancesParMedium(){
+        JpaUtil.creerEntityManager();
+        List<Pair<Medium,Integer>> result = new ArrayList<Pair<Medium,Integer>>();
+        List<Medium> mediums;
+        try{
+            DaoMedium daomedium = new DaoMedium();
+            mediums = daomedium.findAll();
+            for(Medium medium :mediums){
+                result.add(new Pair(medium,medium.getNbVoyancesDemandees()));
+            }
+            
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return result;
+    }
+    
+    public List<Pair<Employe,Integer>> recupererVoyancesParEmploye(){
+        JpaUtil.creerEntityManager();
+        List<Pair<Employe,Integer>> result = new ArrayList<Pair<Employe,Integer>>();
+        List<Employe> employes;
+        try{
+            DaoEmploye daoemploye = new DaoEmploye();
+            employes = daoemploye.findAll();
+            for(Employe employe :employes){
+                result.add(new Pair(employe,employe.getNbVoyances()));
+            }
+            
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return result;
+    }
+    
+    public List<Pair<Employe,Integer>> recupererVoyancesParEmployePourcentage(){
+        JpaUtil.creerEntityManager();
+        List<Pair<Employe,Integer>> result = new ArrayList<Pair<Employe,Integer>>();
+        List<Employe> employes;
+        try{
+            DaoEmploye daoemploye = new DaoEmploye();
+            employes = daoemploye.findAll();
+            int total = 0;
+            for(Employe employe :employes){
+                total+=employe.getNbVoyances();
+            }
+            if(total == 0)
+                return result;
+            for(Employe employe :employes){
+                result.add(new Pair(employe,(employe.getNbVoyances()/total)*100));    
+            }
+        }catch(Exception e){
+            JpaUtil.fermerEntityManager();
+            return null;
+        }
+        JpaUtil.fermerEntityManager();
+        return result;
+    }
+    
+}

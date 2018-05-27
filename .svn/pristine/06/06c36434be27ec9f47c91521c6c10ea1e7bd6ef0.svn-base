@@ -1,0 +1,92 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package models;
+
+import java.io.Serializable;
+import java.util.List;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.ManyToMany;
+
+/**
+ *
+ * @author eborghino
+ */
+@Entity
+@Inheritance (strategy = InheritanceType.SINGLE_TABLE)
+public abstract class Medium {
+
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long idM;
+
+    private String Nom;
+    private String bio;
+    private int nbVoyances;
+
+    @ManyToMany
+    private List<Employe> employes;
+    
+    public Long getIdM() {
+        return idM;
+    }
+
+    public List<Employe> getEmployes() {
+        return employes;
+    }
+
+    public void setEmployes(List<Employe> employes) {
+        this.employes = employes;
+    }
+
+    public void addEmploye(Employe employe) {
+        this.employes.add(employe);
+    }
+    
+    public String getNom() {
+        return Nom;
+    }
+
+    public void setNom(String Nom) {
+        this.Nom = Nom;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public int getNbVoyances() {
+        return nbVoyances;
+    }
+
+    public void setNbVoyances(int nbVoyances) {
+        this.nbVoyances = nbVoyances;
+    }
+
+    public Medium( String Nom, String bio, int nbVoyances) {
+        this.Nom = Nom;
+        this.bio = bio;
+        this.nbVoyances = nbVoyances;
+    }
+
+    public Medium() {
+    }
+
+    @Override
+    public String toString() {
+        return "Models.Medium[ id=" + idM + "Nom=" + Nom + " ]";
+    }
+    
+}
